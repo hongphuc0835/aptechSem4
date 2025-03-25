@@ -3,6 +3,7 @@ package com.example.T2307M_Myshop.service;
 
 import com.example.T2307M_Myshop.entity.Product;
 import com.example.T2307M_Myshop.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    @Transactional
     public Product update(Long id, Product productUpdate) {
         // Kiểm tra xem sản phẩm có tồn tại không
         Optional<Product> existingProduct = productRepository.findById(id);

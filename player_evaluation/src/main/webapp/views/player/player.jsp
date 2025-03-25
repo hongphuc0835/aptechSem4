@@ -47,13 +47,9 @@
 
             <!-- Value -->
             <div class="col-md-2">
-                <label class="form-label fw-semibold">Value</label>
-                <select name="value" class="form-select" required>
-                    <option value="">Value</option>
-                    <option value="90" ${player.value == 90 ? 'selected' : ''}>90</option>
-                    <option value="1" ${player.value == 1 ? 'selected' : ''}>1</option>
-                </select>
-            </div>
+            <label class="form-label fw-semibold">Value</label>
+            <input type="number" class="form-control" name="value" value="${player.value}" placeholder="Enter value" required>
+        </div>
 
             <!-- Submit Button -->
             <div class="col-md-1 d-flex align-items-end">
