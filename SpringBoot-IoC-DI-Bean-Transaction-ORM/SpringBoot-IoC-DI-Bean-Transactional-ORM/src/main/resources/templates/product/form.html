@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý sản phẩm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a73e8;
+            margin-bottom: 40px;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+
+        form {
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #34495e;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 5px rgba(26, 115, 232, 0.3);
+            outline: none;
+        }
+
+        input[type="submit"] {
+            background-color: #1a73e8;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #1557b0;
+            transform: translateY(-2px);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: #1a73e8;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #1557b0;
+            text-decoration: underline;
+        }
+
+        /* Thêm icon cho các trường */
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .input-wrapper input,
+        .input-wrapper select {
+            padding-left: 40px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            form {
+                padding: 20px;
+            }
+
+            input[type="submit"] {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+<h1 th:text="${product.id} ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'"></h1>
+
+<form th:action="${product.id != null} ? @{/products/update/{id}(id=${product.id})} : @{/products}" th:object="${product}" method="post">
+    <div class="input-wrapper">
+        <label for="name">Tên sản phẩm:</label>
+        <i class="fas fa-tag"></i>
+        <input type="text" id="name" th:field="*{name}" required>
+    </div>
+    <div class="input-wrapper">
+        <label for="price">Giá:</label>
+        <i class="fas fa-dollar-sign"></i>
+        <input type="number" id="price" th:field="*{price}" step="0.01" required>
+    </div>
+    <div class="input-wrapper">
+        <label for="description">Mô tả:</label>
+        <i class="fas fa-comment"></i>
+        <input type="text" id="description" th:field="*{description}">
+    </div>
+    <div class="input-wrapper">
+        <label for="category">Danh mục:</label>
+        <i class="fas fa-list"></i>
+        <select id="category" th:field="*{category.id}">
+            <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+        </select>
+    </div>
+    <div>
+        <input type="submit" th:value="${product.id} ? 'Submit' : 'Submit'">
+    </div>
+</form>
+
+<a th:href="@{/products}" class="back-link">
+    <i class="fas fa-arrow-left"></i> Quay lại danh sách sản phẩm
+</a>
+</body>
+</html>
