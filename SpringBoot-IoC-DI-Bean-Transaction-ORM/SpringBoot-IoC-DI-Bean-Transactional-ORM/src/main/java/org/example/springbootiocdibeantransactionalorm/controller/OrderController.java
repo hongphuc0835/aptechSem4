@@ -11,9 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @RequestMapping("/orders")
@@ -56,7 +54,7 @@ public class OrderController {
 
         // Handle products
         if (productIds != null) {
-            List<Product> productList = new ArrayList<>();
+            Set<Product> productList = new HashSet<>();
             for (Long pid : productIds) {
                 productService.getProductById(pid).ifPresent(productList::add);
             }
@@ -97,7 +95,7 @@ public class OrderController {
 
             // Cập nhật products
             if (productIds != null) {
-                List<Product> productList = new ArrayList<>();
+                Set<Product> productList = new HashSet<>();
                 for (Long pid : productIds) {
                     productService.getProductById(pid).ifPresent(productList::add);
                 }

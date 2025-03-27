@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Salary Management</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Thêm nền màu xám cho toàn bộ trang */
+        body {
+            background-color: #e9ecef; /* Màu xám nhạt */
+        }
+
+        /* Container chính có nền trắng để nổi bật trên nền xám */
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px; /* Khoảng cách giữa các container */
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .btn-add {
+            background-color: #4a90e2;
+            border: none;
+        }
+
+        .btn-reset {
+            background-color: #f5a623;
+            border: none;
+        }
+
+        .btn-edit {
+            background-color: #28a745;
+            border: none;
+            padding: 8px 16px; /* Tăng kích thước nút */
+            font-size: 16px;
+        }
+
+        .btn-remove {
+            background-color: #dc3545;
+            border: none;
+            padding: 8px 16px; /* Tăng kích thước nút */
+            font-size: 16px;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+        }
+
+        .alert {
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        /* Căn phải các nút trong cột Actions */
+        .action-buttons {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Container cho Form -->
+<div class="container mt-4">
+    <h2>User</h2>
+
+    <!-- Success/Error Messages -->
+    <div id="notification">
+        <div th:if="${successMessage}" class="alert alert-success" role="alert">
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+            <span th:text="${errorMessage}"></span>
+        </div>
+    </div>
+
+    <!-- Form for Create/Update -->
+    <form th:action="@{/employees/save}" method="post">
+        <input type="hidden" name="id" th:value="${employee.id}" />
+
+        <div class="form-group">
+            <label>Name</label>
+            <input type="text" name="name" class="form-control" th:value="${employee.name}" placeholder="Enter your name" required>
+        </div>
+
+        <div class="form-group">
+            <label>Age</label>
+            <input type="number" name="age" class="form-control" th:value="${employee.age}" placeholder="Enter your Age" required>
+        </div>
+
+        <div class="form-group">
+            <label>Salary</label>
+            <input type="number" name="salary" class="form-control" th:value="${employee.salary}" placeholder="Enter your Salary" required>
+        </div>
+
+        <div class="form-group text-right">
+            <button type="submit" class="btn btn-add text-white">
+                <span th:if="${employee.id == null}">Add</span>
+                <span th:if="${employee.id != null}">Update</span>
+            </button>
+            <button type="reset" class="btn btn-reset text-white ml-2">Reset form</button>
+        </div>
+    </form>
+</div>
+
+<!-- Container cho List of Users -->
+<div class="container">
+    <h2>List of Users</h2>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>NAME</th>
+            <th>AGE</th>
+            <th>SALARY</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="emp : ${employees}">
+            <td th:text="${emp.id}"></td>
+            <td th:text="${emp.name}"></td>
+            <td th:text="${emp.age}"></td>
+            <td th:text="${emp.salary}"></td>
+            <td class="action-buttons">
+                <a th:href="@{/employees/edit/{id}(id=${emp.id})}" class="btn btn-edit text-white">Edit</a>
+                <form th:action="@{/employees/delete/{id}(id=${emp.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-remove text-white">Remove</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- JavaScript để tự động ẩn thông báo sau 3 giây -->
+<script>
+    $(document).ready(function() {
+        // Nếu có thông báo, tự động ẩn sau 3 giây
+        setTimeout(function() {
+            $("#notification .alert").fadeOut("slow");
+        }, 3000); // 3000ms = 3 giây
+    });
+</script>
+
+</body>
+</html>

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +35,9 @@ public class OrderService {
             });
 
             //  Tính tổng tiền từ danh sách sản phẩm
-            double totalPrice = order.getProducts().stream()
+            double totalPrice = Optional.ofNullable(order.getProducts())
+                    .orElse(Collections.emptySet())
+                    .stream()
                     .mapToDouble(Product::getPrice)
                     .sum();
             order.setTotalPrice(totalPrice); //  Gán tổng tiền vào đơn hàng
@@ -48,12 +51,12 @@ public class OrderService {
 
     // Get all orders
     public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+        return orderRepository.findAllWithAssociations();
     }
 
     // Get order by ID
     public Optional<Order> getOrderById(Long id) {
-        return orderRepository.findById(id);
+        return orderRepository.findWithProductsById(id);
     }
 
     // Update an existing order
@@ -63,6 +66,7 @@ public class OrderService {
 
         order.setDate(LocalDateTime.now());
         order.setProducts(orderDetails.getProducts());
+        order.updateTotalPrice();
 
         return orderRepository.save(order);
     }
