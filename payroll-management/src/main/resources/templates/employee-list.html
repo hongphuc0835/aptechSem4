@@ -59,6 +59,11 @@
         .action-buttons {
             text-align: right;
         }
+
+        /* Form tìm kiếm */
+        .search-form {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -109,7 +114,16 @@
 <!-- Container cho List of Users -->
 <div class="container">
     <h2>List of Users</h2>
-    <table class="table table-bordered">
+
+    <!-- Ô tìm kiếm -->
+    <div class="search-form">
+        <div class="form-group">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by name">
+        </div>
+    </div>
+
+    <!-- Danh sách người dùng -->
+    <table class="table table-bordered" id="userTable">
         <thead>
         <tr>
             <th>ID</th>
@@ -136,13 +150,22 @@
     </table>
 </div>
 
-<!-- JavaScript để tự động ẩn thông báo sau 3 giây -->
+<!-- JavaScript để xử lý tìm kiếm và tự động ẩn thông báo -->
 <script>
     $(document).ready(function() {
-        // Nếu có thông báo, tự động ẩn sau 3 giây
+        // Tự động ẩn thông báo sau 3 giây
         setTimeout(function() {
             $("#notification .alert").fadeOut("slow");
         }, 3000); // 3000ms = 3 giây
+
+        // Xử lý tìm kiếm theo tên
+        $("#searchInput").on("keyup", function() {
+            var value = $(this).val().toLowerCase(); // Lấy giá trị nhập vào và chuyển thành chữ thường
+            $("#userTable tbody tr").filter(function() {
+                // Lọc các hàng trong bảng, chỉ hiển thị hàng có tên chứa giá trị tìm kiếm
+                $(this).toggle($(this).find("td:nth-child(2)").text().toLowerCase().indexOf(value) > -1);
+            });
+        });
     });
 </script>
 
