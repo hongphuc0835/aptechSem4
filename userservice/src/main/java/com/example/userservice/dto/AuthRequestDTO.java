@@ -1,9 +1,9 @@
 package com.example.userservice.dto;
 
-
 import lombok.Data;
 
 @Data
-public class OtpRequestDTO {
+public class AuthRequestDTO {
     private String email;
+    private String password;
 }

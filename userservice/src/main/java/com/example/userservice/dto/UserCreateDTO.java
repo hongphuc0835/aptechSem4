@@ -1,16 +1,15 @@
 package com.example.userservice.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Set;
 
 @Data
-@AllArgsConstructor
-public class UpdateUserRequestDTO {
-    private String email;
+public class UserCreateDTO {
     private String name;
+    private String email;
+    private String password;
     private String phone;
     private String address;
-    private Set<Long> roleIds;
+    private Set<String> roles;
 }

@@ -3,8 +3,9 @@ package com.example.userservice.repository;
 import com.example.userservice.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import java.util.Set;
 
 public interface RoleRepository extends JpaRepository<Role, Long> {
-    Optional<Role> findByName(String user);
+    Set<Role> findByNameIn(Set<String> names);
+    Role findByName(String name);
 }

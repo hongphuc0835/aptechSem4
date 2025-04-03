@@ -1,76 +1,58 @@
 package com.example.userservice.controller;
 
-import com.example.userservice.dto.*;
+import com.example.userservice.dto.UserCreateDTO;
+import com.example.userservice.dto.UserDTO;
+import com.example.userservice.dto.UserUpdateDTO;
 import com.example.userservice.service.UserService;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
-@Controller
-@RestController // đánh dấu Spring Bean, Spring Container quản lý.
-                //Định nghĩa một REST API controller
-@RequestMapping("/users") //Xử lý HTTP request đến một URL cụ thể
-@AllArgsConstructor
+@RestController
+@RequestMapping("/api/users")
 public class UserController {
 
-    @Autowired
-    // Nhiệm vụ: Nhận request từ client, gọi userService, và trả response.
     private final UserService userService;
 
-    // API đăng ký người dùng
-    @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> register(@RequestBody UserRequestDTO request) {
-        return ResponseEntity.ok(userService.register(request));
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    // API đăng nhập và trả về JWT
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody UserRequestDTO request) {
-        return ResponseEntity.ok(new AuthResponseDTO(
-                userService.login(request.getEmail(), request.getPasswordHash())
-        ));
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserCreateDTO userCreateDTO) {
+        UserDTO createdUser = userService.createUser(userCreateDTO);
+        return ResponseEntity.ok(createdUser);
     }
 
-    // API gửi OTP qua email
-    @PostMapping("/send-otp")
-    public ResponseEntity<String> sendOtp(@RequestBody OtpRequestDTO request) {
-        userService.sendOTP(request.getEmail());
-        return ResponseEntity.ok("OTP đã gửi đến email " + request.getEmail());
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 
-    // API xác thực OTP và đổi mật khẩu
-    @PostMapping("/verifyAndChange")
-    public ResponseEntity<String> verifyOtp(@RequestBody VerifyOtpRequestDTO request) {
-        userService.verifyOtpAndChangePassword( request.getEmail(), request.getOtp(), request.getNewPassword());
-        return ResponseEntity.ok("Mật khẩu đã đổi thành công!");
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+        return userService.getUserById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // API cap nhật người dùng
-//    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    @PutMapping("/updateUser")
-    public ResponseEntity<String> updateUser(@RequestBody UpdateUserRequestDTO request) {
-        userService.updateUserByEmail(request);
-        return ResponseEntity.ok("User đã được cập nhật thành công!");
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserUpdateDTO userUpdateDTO) {
+        UserDTO updatedUser = userService.updateUser(id, userUpdateDTO);
+        return ResponseEntity.ok(updatedUser);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping("/deleteUser/{email}")
-    public ResponseEntity<String> deleteUser(@PathVariable String email) {
-        userService.deleteUserByEmail(email);
-        return ResponseEntity.ok("User với email " + email + " đã bị xóa!");
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok().build();
     }
-
-
-    // lấy ra người dung theo email
-    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    @GetMapping("/getByEmail{email}")
-    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable String email) {
-        return ResponseEntity.ok(userService.getUserByEmail(email));
-    }
-
-
 }

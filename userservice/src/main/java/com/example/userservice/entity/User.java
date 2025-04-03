@@ -9,6 +9,10 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
+@NamedEntityGraph(
+        name = "user-roles-graph",
+        attributeNodes = @NamedAttributeNode(value = "roles")
+)
 @Data
 @NoArgsConstructor
 public class User {
@@ -22,11 +26,11 @@ public class User {
     private String phone;
     private String address;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
-            name = "user_roles", // Tên bảng trung gian
-            joinColumns = @JoinColumn(name = "user_id"), // Cột khóa ngoại liên kết với User
-            inverseJoinColumns = @JoinColumn(name = "role_id") // Cột khóa ngoại liên kết với Role
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles = new HashSet<>(); // Khởi tạo Set để tránh NullPointerException
+    private Set<Role> roles = new HashSet<>();
 }
