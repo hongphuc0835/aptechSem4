@@ -12,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
@@ -38,10 +39,17 @@ public class AuthController {
         final UserDTO userDTO = userService.getUserByEmail(authRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(authority -> authority.getAuthority().replace("ROLE_", ""))
+                .collect(Collectors.toList());
+
+        System.out.println("User ID: " + userDTO.getId());
+        System.out.println("Roles from UserDetails: " + roles);
+
         final String jwt = jwtUtil.generateToken(
                 userDetails,
                 userDTO.getId(),
-                userDTO.getRoles().stream().collect(Collectors.toList())
+                roles
         );
 
         return ResponseEntity.ok(new AuthResponseDTO(jwt));
